@@ -1,12 +1,12 @@
 import { api } from './api'
 
-export interface Product {
+export interface PRODUCT {
     id: number;
     title: string;
 }
 
 export interface ProductApiResponse {
-    products: Product[];
+    products: PRODUCT[];
     total: number;
     skip: number;
     limit: number;
@@ -15,12 +15,12 @@ export interface ProductApiResponse {
 export const ProductApi = api.injectEndpoints({
 
     endpoints: (builder) => ({
-        getProducts: builder.query<ProductApiResponse, { limit?: string, skip?: string }>({
-            query: ({ limit, skip }) => {
+        getProducts: builder.query<ProductApiResponse, { limit?: string, skip?: string, q?: string }>({
+            query: ({ limit, skip, q }) => {
                 return {
-                    url: `/products`,
+                    url: `/products/search`,
                     method: 'GET',
-                    params: { limit, skip, select: 'title' }
+                    params: { limit, skip, q, select: 'title' }
                 }
             },
             providesTags: ['PRODUCT']
