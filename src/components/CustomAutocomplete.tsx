@@ -1,8 +1,9 @@
-import { Autocomplete, TextField, CircularProgress } from '@mui/material';
+import { Autocomplete, TextField, CircularProgress, Box, ClickAwayListener, InputAdornment } from '@mui/material';
 import { useState, useEffect } from 'react';
 import { useDebouncedSearch } from '../hooks/useDebouncedSearch';
 import { useInfiniteScroll } from '../hooks/useInfiniteScroll';
 import { useLazyGetProductsQuery } from '../redux/services/productApi';
+import useHotkey from '../hooks/useHotKey';
 
 const CustomAutocomplete = () => {
 
@@ -30,22 +31,10 @@ const CustomAutocomplete = () => {
         }
     }, [data]);
 
-    useEffect(() => {
-        const handleKeyDown = (event: KeyboardEvent) => {
-            // Check if the user pressed 'Ctrl + K'
-            if (event.ctrlKey && event.key === "k") {
-                event.preventDefault(); // Prevent default browser behavior (open search bar)
-                setOpen(true); // Open Autocomplete on 'Ctrl + K'
-            }
-        };
+    
+    // hot key custom hook 
+    useHotkey({ ctrlKey: true, key: "k" }, () => setOpen(true));
 
-        window.addEventListener("keydown", handleKeyDown);
-
-        // Cleanup listener on component unmount
-        return () => {
-            window.removeEventListener("keydown", handleKeyDown);
-        };
-    }, []);
 
 
     // debounced custom hook
@@ -60,48 +49,62 @@ const CustomAutocomplete = () => {
 
 
     return (
-        <div>
-            <Autocomplete
-                sx={{ width: 400 }}
-                open={open}
-                onOpen={() => setOpen(true)}
-                onClose={() => setOpen(false)}
-                options={products}
-                getOptionLabel={(option) => option.title}
-                filterOptions={(x) => x} //for disable client side filtering
-                onInputChange={(_, newValue) => debouncedSearch(newValue)}
-                renderOption={(props, option) => {
-                    return (
-                        <li {...props} key={option.id}> {/* ✅ Unique key set here */}
+        <ClickAwayListener onClickAway={() => setOpen(false)}>
+            <div>
+                <Autocomplete
+                    sx={{ width: 400 }}
+                    open={open}
+                    onOpen={() => setOpen(true)}
+                    onClose={() => setOpen(false)}
+                    options={products}
+                    getOptionLabel={(option) => option.title}
+                    filterOptions={(x) => x} // for not apply client search
+                    onInputChange={(_, newValue) => debouncedSearch(newValue)}
+                    renderOption={(props, option) => (
+                        <li {...props} key={option.id}>
                             {option.title}
                         </li>
-                    );
-                }}
-
-                loading={isFetching}
-                slotProps={
-                    { listbox: { onScroll: handleScroll } }
-                }
-                renderInput={(params) => (
-                    <TextField
-                        {...params}
-                        label="Select Product"
-                        variant="outlined"
-                        slotProps={{
-                            input: {
-                                ...params.InputProps,
-                                endAdornment: (
-                                    <>
-                                        {isFetching ? <CircularProgress color="inherit" size={20} /> : null}
-                                        {params.InputProps.endAdornment}
-                                    </>
-                                ),
-                            }
-                        }}
-                    />
-                )}
-            />
-        </div>
+                    )}
+                    loading={isFetching}
+                    slotProps={{ listbox: { onScroll: handleScroll } }}
+                    renderInput={(params) => (
+                        <TextField
+                            {...params}
+                            label="Select Product"
+                            variant="outlined"
+                            slotProps={{
+                                input: {
+                                    ...params.InputProps,
+                                    endAdornment: (
+                                        <>
+                                            {isFetching ? <CircularProgress color="inherit" size={20} /> : null}
+                                            {params.InputProps.endAdornment}
+                                        </>
+                                    ),
+                                    startAdornment: (
+                                        <InputAdornment position="end" sx={{ ml: "auto" }}>
+                                            <Box
+                                                sx={{
+                                                    bgcolor: "#f0f0f0",
+                                                    px: 1,
+                                                    py: 0.5,
+                                                    borderRadius: 1,
+                                                    fontSize: "0.75rem",
+                                                    fontWeight: "bold",
+                                                    color: "#555",
+                                                }}
+                                            >
+                                                Ctrl + K
+                                            </Box>
+                                        </InputAdornment>
+                                    ),
+                                }
+                            }}
+                        />
+                    )}
+                />
+            </div>
+        </ClickAwayListener>
     )
 }
 
