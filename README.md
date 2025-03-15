@@ -15,7 +15,7 @@ MUI Autocomplete is a React-based project that implements an autocomplete compon
 
 1. Clone the repository:
    ```sh
-   git clone <repository-url>
+   git clone https://github.com/mahdi4k/mui-autocomplete.git
    cd mui-autocomplete
    ```
 
