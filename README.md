@@ -67,8 +67,3 @@ yarn lint
 - **[typescript](https://www.typescriptlang.org/)** - Type Safety
 - **[eslint](https://eslint.org/)** - Linting
 - **[@vitejs/plugin-react](https://www.npmjs.com/package/@vitejs/plugin-react)** - React Plugin for Vite
-
-## 📜 License
-This project is licensed under **MIT License**.
-
----
