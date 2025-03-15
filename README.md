@@ -1,54 +1,74 @@
-# React + TypeScript + Vite
+# MUI Autocomplete
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+MUI Autocomplete is a React-based project that implements an autocomplete component using **Material-UI (MUI)**. It supports lazy loading of options, infinite scrolling, and a keyboard shortcut (**Ctrl + K**) to open the autocomplete.
 
-Currently, two official plugins are available:
+## 🚀 Features
+- Autocomplete with **MUI**
+- Supports **lazy loading** of product options
+- **Infinite scrolling** for fetching more data
+- Keyboard shortcut **Ctrl + K** to open the input field
+- Debounced search using **lodash.debounce**
+- State management with **Redux Toolkit**
+- Built with **Vite** for fast development
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🛠️ Installation
 
-## Expanding the ESLint configuration
+1. Clone the repository:
+   ```sh
+   git clone <repository-url>
+   cd mui-autocomplete
+   ```
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+2. Install dependencies:
+   ```sh
+   yarn install
+   ```
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+3. Create a **.env** file by copying **.env.example**:
+   ```sh
+   cp .env.example .env
+   ```
+   Then, use the following address in `.env` without modification:
+   ```env
+   VITE_API_BASE_URL=https://dummyjson.com
+   ```
+
+## 💻 Usage
+
+### Start the development server
+```sh
+yarn dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+### Build for production
+```sh
+yarn build
 ```
+
+### Preview production build
+```sh
+yarn preview
+```
+
+### Run ESLint
+```sh
+yarn lint
+```
+
+## 📦 Dependencies
+### Main Dependencies:
+- **[@mui/material](https://mui.com/)** - UI Components
+- **[@reduxjs/toolkit](https://redux-toolkit.js.org/)** - State Management
+- **[lodash.debounce](https://lodash.com/docs/4.17.15#debounce)** - Debounced Search
+- **[react](https://react.dev/)** - UI Framework
+
+### Development Dependencies:
+- **[vite](https://vitejs.dev/)** - Build Tool
+- **[typescript](https://www.typescriptlang.org/)** - Type Safety
+- **[eslint](https://eslint.org/)** - Linting
+- **[@vitejs/plugin-react](https://www.npmjs.com/package/@vitejs/plugin-react)** - React Plugin for Vite
+
+## 📜 License
+This project is licensed under **MIT License**.
+
+---
