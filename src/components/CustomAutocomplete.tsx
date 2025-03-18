@@ -1,4 +1,4 @@
-import { Autocomplete, TextField, CircularProgress, Box, ClickAwayListener, InputAdornment } from '@mui/material';
+import { Autocomplete, TextField, CircularProgress, Box, InputAdornment, Chip } from '@mui/material';
 import { useState, useEffect } from 'react';
 import { useDebouncedSearch } from '../hooks/useDebouncedSearch';
 import { useInfiniteScroll } from '../hooks/useInfiniteScroll';
@@ -6,12 +6,12 @@ import { useLazyGetProductsQuery } from '../redux/services/productApi';
 import useHotkey from '../hooks/useHotKey';
 
 const CustomAutocomplete = () => {
-
     const [products, setProducts] = useState<{ id: number; title: string }[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [open, setOpen] = useState(false);
     const [hasMore, setHasMore] = useState(true);
     const [skip, setSkip] = useState(0);
+    const [selectedProducts, setSelectedProducts] = useState<{ id: number; title: string }[]>([]); // ✅ Multi-Select State
 
     // get lazy product data
     const [fetchProducts, { data, isFetching }] = useLazyGetProductsQuery();
@@ -31,17 +31,13 @@ const CustomAutocomplete = () => {
         }
     }, [data]);
 
-    
     // hot key custom hook 
     useHotkey({ ctrlKey: true, key: "k" }, () => setOpen(true));
-
-
 
     // debounced custom hook
     const debouncedSearch = useDebouncedSearch((query) => {
         setSearchTerm(query);
         setSkip(0);
-        setProducts([]);
     }, 500);
 
     // infinite scroll custom hook 
@@ -49,17 +45,26 @@ const CustomAutocomplete = () => {
 
 
     return (
-        <ClickAwayListener onClickAway={() => setOpen(false)}>
-            <div>
+             <div>
                 <Autocomplete
-                    sx={{ width: 400 }}
+                    multiple
+                    freeSolo
+                    sx={{ width: 500 }}
                     open={open}
                     onOpen={() => setOpen(true)}
                     onClose={() => setOpen(false)}
                     options={products}
-                    getOptionLabel={(option) => option.title}
-                    filterOptions={(x) => x} // for not apply client search
+                    getOptionLabel={(option) => typeof option === "string" ? option : option.title} // ✅ Handle both string & object
+                    filterOptions={(x) => x} // Disable default filtering
                     onInputChange={(_, newValue) => debouncedSearch(newValue)}
+                    value={selectedProducts} // ✅ Ensure it always gets an array of objects
+                    onChange={(_, newValue) => {
+                        // ✅ Convert string inputs into objects
+                        const updatedValue = newValue.map((item) =>
+                            typeof item === "string" ? { id: Date.now(), title: item } : item
+                        );
+                        setSelectedProducts(updatedValue);
+                    }}
                     renderOption={(props, option) => (
                         <li {...props} key={option.id}>
                             {option.title}
@@ -67,10 +72,22 @@ const CustomAutocomplete = () => {
                     )}
                     loading={isFetching}
                     slotProps={{ listbox: { onScroll: handleScroll } }}
+                    renderTags={(selected, getTagProps) =>
+                        selected.map((option, index) => (
+                            <Chip
+                                {...getTagProps({ index })}
+                                key={option.id}
+                                label={option.title}
+                                onDelete={() =>
+                                    setSelectedProducts(selected.filter((item) => item.id !== option.id))
+                                }
+                            />
+                        ))
+                    }
                     renderInput={(params) => (
                         <TextField
                             {...params}
-                            label="Select Product"
+                            label="Select Products"
                             variant="outlined"
                             slotProps={{
                                 input: {
@@ -79,33 +96,30 @@ const CustomAutocomplete = () => {
                                         <>
                                             {isFetching ? <CircularProgress color="inherit" size={20} /> : null}
                                             {params.InputProps.endAdornment}
+                                            <InputAdornment position="end" sx={{ ml: "auto" }}>
+                                                <Box
+                                                    sx={{
+                                                        bgcolor: "#f0f0f0",
+                                                        px: .5,
+                                                        py: 0.1,
+                                                        borderRadius: 1,
+                                                        fontSize: "8px",
+                                                        color: "#555",
+                                                    }}
+                                                >
+                                                    Ctrl + K
+                                                </Box>
+                                            </InputAdornment>
                                         </>
                                     ),
-                                    startAdornment: (
-                                        <InputAdornment position="end" sx={{ ml: "auto" }}>
-                                            <Box
-                                                sx={{
-                                                    bgcolor: "#f0f0f0",
-                                                    px: 1,
-                                                    py: 0.5,
-                                                    borderRadius: 1,
-                                                    fontSize: "0.75rem",
-                                                    fontWeight: "bold",
-                                                    color: "#555",
-                                                }}
-                                            >
-                                                Ctrl + K
-                                            </Box>
-                                        </InputAdornment>
-                                    ),
+
                                 }
                             }}
                         />
                     )}
                 />
             </div>
-        </ClickAwayListener>
-    )
-}
+     );
+};
 
-export default CustomAutocomplete
+export default CustomAutocomplete;
